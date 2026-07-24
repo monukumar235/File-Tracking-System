@@ -180,6 +180,66 @@ export const updateFile =  async (req,res)=>{
     }
 }
 
+
+export const uploadAttachment = async (req,res)=>{
+    try {
+        const {id} = req.params;
+
+        if(!mongoose.Types.ObjectId.isValid(id)){
+            return res.status(400).json({
+                success : false,
+                message : "Invalid Id."
+            });
+        }
+
+        const file = await FileModel.findById(id);
+
+        if(!file){
+            return res.status(404).json({
+                success : false,
+                message : "File not found"
+            });
+        }
+
+        if(file.createdBy.toString()!==req.userId){
+            return res.status(403).json({
+                success : false,
+                message : "Access Denial"
+            });
+        }
+
+        if(file.status !== "DRAFT"){
+            return res.status(403).json({
+                success : false,
+                message : "Attachment cann't be uploaded after submission."
+            });
+        }
+
+        if(!req.file){
+            return res.status(404).json({
+                success : false,
+                message : "Attachment is missing."
+            });
+        }
+
+        file.attachment = req.file.originalname;
+
+        await file.save();
+
+        return res.status(200).json({
+            success : true,
+            message : "Attachment uploaded successfully.",
+            data : file
+        })
+    } catch (error) {
+        return res.status(500).json({
+            success : false,
+            message : "Internal server error",
+            error : error.message
+        });
+    }
+}
+
 export const submit = async (req,res)=>{
     try {
         const {id} = req.params;
