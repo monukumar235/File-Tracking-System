@@ -40,7 +40,16 @@ const fileSchema = new mongoose.Schema({
     currentOwner : {
         type : mongoose.Types.ObjectId,
         ref : "User",
-        required : true,
+        default : null
+    },
+    closedBy :{
+        type : mongoose.Types.ObjectId,
+        ref : "User",
+        default : null
+    },
+    closedDate : {
+        type : Date,
+        default : null
     },
     attachment : {
         type :String,

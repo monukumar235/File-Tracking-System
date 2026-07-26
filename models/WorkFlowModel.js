@@ -23,7 +23,7 @@ const workFlowSchema = new mongoose.Schema({
             "SUBMITTED",
             "FORWARD",
             "RETURN",
-            "APPROVE",
+            "APPROVED",
             "REJECT"
         ]
     },

@@ -3,6 +3,7 @@ import crypto from 'node:crypto';
 import mongoose from "mongoose";
 import User from "../models/User.js";
 import WorkFlowModel from "../models/WorkFlowModel.js";
+import createAuditLog from "../utils/Audit.js";
 
 export const createFile = async (req, res) => {
 
@@ -25,6 +26,14 @@ export const createFile = async (req, res) => {
             priority,
             createdBy: req.userId,
             currentOwner: req.userId
+        });
+
+        createAuditLog({
+            userId: req.userId,
+            fileId: file._id,
+            module: "FILE",
+            action: "CREATE",
+            description: `File ${file, fileNumber} created`
         });
 
         return res.status(201).json({
@@ -87,10 +96,10 @@ export const getFileById = async (req, res) => {
     try {
         const { id } = req.params;
 
-        if(!mongoose.Types.ObjectId.isValid(id)){
+        if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(403).json({
-                success : false,
-                message : "Invalid Id."
+                success: false,
+                message: "Invalid Id."
             })
         }
 
@@ -114,111 +123,111 @@ export const getFileById = async (req, res) => {
             });
         }
         return res.status(200).json({
-            success : true,
-            data : file
+            success: true,
+            data: file
         });
     } catch (error) {
         return res.status(500).json({
-            success : false,
-            message : "Internal server error",
-            error : error.message
+            success: false,
+            message: "Internal server error",
+            error: error.message
         });
     }
 }
 
-export const updateFile =  async (req,res)=>{
+export const updateFile = async (req, res) => {
     try {
-        const {id} = req.params;
+        const { id } = req.params;
 
-        const {subject,description,priority} = req.body;
+        const { subject, description, priority } = req.body;
 
-        if(!mongoose.Types.ObjectId.isValid(id)){
+        if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(400).json({
-                success : false,
-                message : "Invalid Id"
+                success: false,
+                message: "Invalid Id"
             });
         }
 
         const file = await FileModel.findById(id);
 
-        if(!file){
+        if (!file) {
             return res.status(404).json({
-                success : false,
-                message : "File not found"
+                success: false,
+                message: "File not found"
             });
         }
 
-        if(file.createdBy.toString() !== req.userId){
+        if (file.createdBy.toString() !== req.userId) {
             return res.status(403).json({
-                success : false,
-                message : "You are not authorized to edit this file"
+                success: false,
+                message: "You are not authorized to edit this file"
             });
         }
 
-        if(file.status !== "DRAFT"){
+        if (file.status !== "DRAFT") {
             return res.status(400).json({
-                success : false,
-                message : "Only draft file can be edited."
+                success: false,
+                message: "Only draft file can be edited."
             });
         }
 
-        if(subject) file.subject = subject;
-        
-        if(description) file.description = description;
+        if (subject) file.subject = subject;
 
-        if(priority) file.priority = priority;
+        if (description) file.description = description;
+
+        if (priority) file.priority = priority;
 
         await file.save();
 
         return res.status(200).json({
-            success : true,
-            message : "File updated successfully",
-            data : file
+            success: true,
+            message: "File updated successfully",
+            data: file
         })
     } catch (error) {
-        
+
     }
 }
 
 
-export const uploadAttachment = async (req,res)=>{
+export const uploadAttachment = async (req, res) => {
     try {
-        const {id} = req.params;
+        const { id } = req.params;
 
-        if(!mongoose.Types.ObjectId.isValid(id)){
+        if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(400).json({
-                success : false,
-                message : "Invalid Id."
+                success: false,
+                message: "Invalid Id."
             });
         }
 
         const file = await FileModel.findById(id);
 
-        if(!file){
+        if (!file) {
             return res.status(404).json({
-                success : false,
-                message : "File not found"
+                success: false,
+                message: "File not found"
             });
         }
 
-        if(file.createdBy.toString()!==req.userId){
+        if (file.createdBy.toString() !== req.userId) {
             return res.status(403).json({
-                success : false,
-                message : "Access Denial"
+                success: false,
+                message: "Access Denial"
             });
         }
 
-        if(file.status !== "DRAFT"){
+        if (file.status !== "DRAFT") {
             return res.status(403).json({
-                success : false,
-                message : "Attachment cann't be uploaded after submission."
+                success: false,
+                message: "Attachment cann't be uploaded after submission."
             });
         }
 
-        if(!req.file){
+        if (!req.file) {
             return res.status(404).json({
-                success : false,
-                message : "Attachment is missing."
+                success: false,
+                message: "Attachment is missing."
             });
         }
 
@@ -227,59 +236,59 @@ export const uploadAttachment = async (req,res)=>{
         await file.save();
 
         return res.status(200).json({
-            success : true,
-            message : "Attachment uploaded successfully.",
-            data : file
+            success: true,
+            message: "Attachment uploaded successfully.",
+            data: file
         })
     } catch (error) {
         return res.status(500).json({
-            success : false,
-            message : "Internal server error",
-            error : error.message
+            success: false,
+            message: "Internal server error",
+            error: error.message
         });
     }
 }
 
-export const submit = async (req,res)=>{
+export const submit = async (req, res) => {
     try {
-        const {id} = req.params;
+        const { id } = req.params;
 
-        if(!mongoose.Types.ObjectId.isValid(id)){
+        if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(400).json({
-                success : false,
-                message : "Invalid Id."
+                success: false,
+                message: "Invalid Id."
             });
         }
 
         const file = await FileModel.findById(id);
 
-        if(!file){
+        if (!file) {
             return res.status(404).json({
-                success : false,
-                message : "File not found"
+                success: false,
+                message: "File not found"
             });
         }
 
-        if(file.createdBy.toString()!== req.userId){
+        if (file.createdBy.toString() !== req.userId) {
             return res.status(403).json({
-                success : false,
-                message : "You are not authorized to submit this file."
+                success: false,
+                message: "You are not authorized to submit this file."
             });
         }
 
-        if(file.status!=="DRAFT"){
+        if (file.status !== "DRAFT") {
             return res.status(400).json({
-                success : false,
-                message : "File already submitted."
+                success: false,
+                message: "File already submitted."
             });
         }
 
         const currentUser = await User.findById(req.userId);
 
-        if(!currentUser.reportingTo){
+        if (!currentUser.reportingTo) {
             return res.status(400).json({
-                success :false,
-                message : "Reporting manager not configed"
+                success: false,
+                message: "Reporting manager not configed"
             });
         }
 
@@ -288,24 +297,32 @@ export const submit = async (req,res)=>{
 
         await file.save();
 
+        createAuditLog({
+            userId: req.userId,
+            fileId: file._id,
+            module: "WORKFLOW",
+            action: "SUBMIT",
+            description: "File submitted."
+        });
+
         await WorkFlowModel.create({
-            fileId : file._id,
-            fromUser : currentUser._id,
-            toUser : currentUser.reportingTo,
-            action : "SUBMITTED",
-            remark : "File Submitted" 
+            fileId: file._id,
+            fromUser: currentUser._id,
+            toUser: currentUser.reportingTo,
+            action: "SUBMITTED",
+            remark: "File Submitted"
         });
 
         return res.status(200).json({
-            success : true,
-            message : "File Submitted successfully.",
-            data : file
+            success: true,
+            message: "File Submitted successfully.",
+            data: file
         });
     } catch (error) {
         return res.status(500).json({
-            success : false,
-            message : "Internal server error",
-            error : error.message
+            success: false,
+            message: "Internal server error",
+            error: error.message
         });
     }
 }

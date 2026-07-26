@@ -5,6 +5,9 @@ import authRoute from "./routes/auth.js";
 import userRoute from "./routes/UserRoute.js";
 import fileRoute from "./routes/FileRoute.js";
 import workFlowRoute from "./routes/WorkFlowRoute.js";
+import auditRoutes from "./routes/AuditRoutes.js";
+
+
 const app = express();
 
 dotenv.config();
@@ -20,6 +23,7 @@ app.use("/api/auth",authRoute);
 app.use("/api/user",userRoute);
 app.use("/api/file",fileRoute);
 app.use("/api/workFlow",workFlowRoute);
+app.use("/api/audit",auditRoutes);
 
 app.listen(port,()=>{
     console.log(`Server is Running at port ${port}`);

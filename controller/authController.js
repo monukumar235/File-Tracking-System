@@ -2,6 +2,7 @@ import UserModel from "../models/User.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
+import createAuditLog from "../utils/Audit.js";
 
 
 
@@ -46,6 +47,13 @@ export const login = async (req, res) => {
             }
         );
 
+        createAuditLog({
+            userId : user.id,
+            module : "Auth",
+            action : "LOGIN",
+            description : "User logged in"
+        });
+
         return res.status(200).json({
             success: true,
             message: "Login Successful",
@@ -68,6 +76,12 @@ export const login = async (req, res) => {
 
 export const logout = async (req, res) => {
     try {
+        createAuditLog({
+            userId : req.userId,
+            module : "Auth",
+            action : "LOGOUT",
+            description : "User logged out"
+        });
         return res.status(200).json({
             success: true,
             message: "Successfully loged out.."
@@ -101,6 +115,13 @@ export const profile = async (req, res) => {
                 message: "User not found"
             });
         }
+
+        createAuditLog({
+            userId : user.id,
+            module : "Auth",
+            action : "PROFILE",
+            description : "User profile"
+        })
 
         return res.status(200).json({
             success: true,
