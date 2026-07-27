@@ -4,20 +4,28 @@ import { connectToDb } from "./config/db.js";
 import authRoute from "./routes/auth.js";
 import userRoute from "./routes/UserRoute.js";
 import fileRoute from "./routes/FileRoute.js";
+import workFlowRoute from "./routes/WorkFlowRoute.js";
+import auditRoutes from "./routes/AuditRoutes.js";
+import dashBoardRoute from "./routes/DashBoardRoute.js";
+
 
 const app = express();
 
 dotenv.config();
 app.use(express.json());
+app.use("/uploads",express.static("uploads"))
 
 const port = process.env.PORT;
 
 connectToDb();
 
 
-app.use("/api/route",authRoute);
-app.use("/api",userRoute);
-app.use("/api",fileRoute);
+app.use("/api/auth",authRoute);
+app.use("/api/user",userRoute);
+app.use("/api/file",fileRoute);
+app.use("/api/workFlow",workFlowRoute);
+app.use("/api/audit",auditRoutes);
+app.use("/api/dashboard",dashBoardRoute);
 
 app.listen(port,()=>{
     console.log(`Server is Running at port ${port}`);

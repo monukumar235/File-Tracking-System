@@ -1,194 +1,209 @@
 import UserModel from "../models/User.js";
 import bcrypt from "bcryptjs";
 import mongoose from "mongoose";
+import createAuditLog from "../utils/Audit.js";
 
 
 
-export const createUsers = async(req ,res)=>{
+export const createUsers = async (req, res) => {
     try {
-        const {name,email,password,role,reportingTo} = req.body;
+        const { name, email, password, role, reportingTo } = req.body;
 
-        if(!name || !email || !password || !role){
+        if (!name || !email || !password || !role) {
             return res.status(400).json({
-                succes : false,
-                message : "All fields are required"
+                succes: false,
+                message: "All fields are required"
             });
         }
 
-        const existingUser = await UserModel.findOne({email});
+        const existingUser = await UserModel.findOne({ email });
 
-        if(existingUser){
+        if (existingUser) {
             return res.status(400).json({
-                succes : false,
-                message : "User with this email already exists."
+                succes: false,
+                message: "User with this email already exists."
             });
         }
-        const hashed = await bcrypt.hash(password,10);
+        const hashed = await bcrypt.hash(password, 10);
 
-        const user = await UserModel.create({name,email,password : hashed,role,reportingTo: reportingTo || null});
+        const user = await UserModel.create({ name, email, password: hashed, role, reportingTo: reportingTo || null });
 
         const userResponse = user.toObject();
         delete userResponse.password;
 
+        createAuditLog({
+            userId: req.userId,
+            module: "USER",
+            action: "CREATE",
+            description: `Created user ${user.name}`
+        });
+
         return res.status(201).json({
-            succes : true,
-            message : "User created successfully",
-            data : userResponse
+            succes: true,
+            message: "User created successfully",
+            data: userResponse
         });
 
     } catch (error) {
         return res.status(500).json({
-            succes : false,
-            message : "Internal server error",
-            error : error.message
+            succes: false,
+            message: "Internal server error",
+            error: error.message
         });
     }
 }
 
-export const getAllUsers = async (req,res)=>{
+export const getAllUsers = async (req, res) => {
     try {
-        const users = await UserModel.find({isActive : true}).select("-password").populate("reportingTo","name email role");
+        const users = await UserModel.find({ isActive: true }).select("-password").populate("reportingTo", "name email role");
 
-        if(!users){
+        if (!users) {
             return res.status(404).json({
-                succes : false,
-                message : "No Active user found."
+                succes: false,
+                message: "No Active user found."
             });
         }
 
         return res.status(200).json({
-            succes : true,
-            message : "User found successfully",
-            count : users.length,
-            data : users
+            succes: true,
+            message: "User found successfully",
+            count: users.length,
+            data: users
         });
     } catch (error) {
         return res.status(500).json({
-            succes : false,
-            message : "Internal server error",
-            error : error.message
+            succes: false,
+            message: "Internal server error",
+            error: error.message
         });
     }
 }
 
-export const getUserById =  async (req,res)=>{
+export const getUserById = async (req, res) => {
     try {
-        const {id} = req.params;
-        
-        if(!mongoose.Types.ObjectId.isValid(id)){
+        const { id } = req.params;
+
+        if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(400).json({
-                succes : false,
-                message : "Invalid Id."
+                succes: false,
+                message: "Invalid Id."
             });
         }
 
-        const user = await UserModel.findById(id).select("-password").populate("reportingTo","name role email");
+        const user = await UserModel.findById(id).select("-password").populate("reportingTo", "name role email");
 
-        if(!user){
+        if (!user) {
             return res.status(404).json({
-                succes : false,
-                message : "User not found"
+                succes: false,
+                message: "User not found"
             });
         }
 
         return res.status(200).json({
-            succes : true,
-            message : "User successfully fatched.",
-            data : user
+            succes: true,
+            message: "User successfully fatched.",
+            data: user
         });
 
     } catch (error) {
         return res.status(500).json({
-            succes : false,
-            message : "Internal server error",
-            error : error.message
+            succes: false,
+            message: "Internal server error",
+            error: error.message
         });
     }
 }
 
-export const updateUser = async (req,res)=>{
+export const updateUser = async (req, res) => {
     try {
-        const {id} = req.params;
-    
-        const {name,email,role,reportingTo,isActive} = req.body;
+        const { id } = req.params;
 
-        if(!mongoose.Types.ObjectId.isValid(id)){
+        const { name, email, role, reportingTo, isActive } = req.body;
+
+        if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(404).json({
-                success : false,
-                message : "Invalid Id."
+                success: false,
+                message: "Invalid Id."
             })
         }
 
         const user = await UserModel.findById(id);
 
-        if(!user){
+        if (!user) {
             return res.status(404).json({
-                succes : false,
-                message : "User not found"
+                succes: false,
+                message: "User not found"
             });
         }
 
-        if(email || email != user.email){
+        if (email || email != user.email) {
 
-            const existingUser = await UserModel.findOne({email});
+            const existingUser = await UserModel.findOne({ email });
 
-            if(existingUser){
+            if (existingUser) {
                 return res.status(400).json({
-                    succes : false,
-                    message : "Email already exists,"
+                    succes: false,
+                    message: "Email already exists,"
                 });
             }
 
             user.email = email;
         }
 
-        if(name) user.name = name;
+        if (name) user.name = name;
 
-        if(role) user.role = role;
+        if (role) user.role = role;
 
-        if(reportingTo!= undefined){
+        if (reportingTo != undefined) {
             user.reportingTo = reportingTo;
         }
 
-        if(isActive!= undefined){
+        if (isActive != undefined) {
             user.isActive = isActive;
         }
 
         await user.save();
 
-        const updateUser = await UserModel.findById(id).select("-password").populate("reportingTo","name role");
+        const updateUser = await UserModel.findById(id).select("-password").populate("reportingTo", "name role");
+
+        createAuditLog({
+            userId: req.userId,
+            module: "USER",
+            action: "UPDATE USER",
+            description: `Update user ${user.name}`
+        });
 
         return res.status(200).json({
-            succes : true,
-            message : "Updated Successfully.",
-            data : updateUser
+            succes: true,
+            message: "Updated Successfully.",
+            data: updateUser
         });
     } catch (error) {
         return res.status(500).json({
-            succes : true,
-            message : "Internal server error.",
-            error : error.message
+            succes: true,
+            message: "Internal server error.",
+            error: error.message
         });
     }
 }
 
-export const deteleUser = async (req,res)=>{
+export const deteleUser = async (req, res) => {
     try {
-        const {id} = req.params;
+        const { id } = req.params;
 
-        if(!mongoose.Types.ObjectId.isValid(id)){
+        if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(400).json({
-                success : false,
-                message : "Invalid Id."
+                success: false,
+                message: "Invalid Id."
             });
         }
 
         const user = await UserModel.findById(id);
 
-        if(!user){
+        if (!user) {
             return res.status(404).json({
-                success : false,
-                message : "User not found."
+                success: false,
+                message: "User not found."
             });
         }
 
@@ -196,15 +211,22 @@ export const deteleUser = async (req,res)=>{
 
         await user.save();
 
+        createAuditLog({
+            userId: req.userId,
+            module: "USER",
+            action: "DELETE USER",
+            description: `Delete/Deactivate user ${user.name}`
+        });
+
         return res.status(200).json({
-            message : "User deactivated successfully.",
-            sucess : true
+            message: "User deactivated successfully.",
+            sucess: true
         });
     } catch (error) {
         return res.status(500).json({
-            success : false,
-            message : "Internal server error",
-            error : error.message
+            success: false,
+            message: "Internal server error",
+            error: error.message
         });
     }
 }

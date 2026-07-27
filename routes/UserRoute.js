@@ -6,10 +6,10 @@ import { RoleBasedAuthorization } from "../middleware/roleBasedAuthorization.js"
 
 const userRoute = express.Router();
 
-userRoute.post("/users",authenticate,RoleBasedAuthorization("ADMIN"),createUsers);
+userRoute.post("/createUser",authenticate,RoleBasedAuthorization("ADMIN"),createUsers);
 userRoute.get("/users",authenticate,RoleBasedAuthorization("ADMIN"),getAllUsers);
-userRoute.get("/users/:id",authenticate,RoleBasedAuthorization("ADMIN"),getUserById);
-userRoute.put("/users/:id",authenticate,RoleBasedAuthorization("ADMIN"),updateUser);
-userRoute.delete("/users/:id",authenticate,RoleBasedAuthorization("ADMIN"),deteleUser);
+userRoute.get("/:id",authenticate,RoleBasedAuthorization("ADMIN"),getUserById);
+userRoute.put("/:id",authenticate,RoleBasedAuthorization("ADMIN"),updateUser);
+userRoute.delete("/:id",authenticate,RoleBasedAuthorization("ADMIN"),deteleUser);
 
 export default userRoute;
