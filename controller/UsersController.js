@@ -166,6 +166,13 @@ export const updateUser = async (req, res) => {
 
         const updateUser = await UserModel.findById(id).select("-password").populate("reportingTo", "name role");
 
+        createAuditLog({
+            userId: req.userId,
+            module: "USER",
+            action: "UPDATE USER",
+            description: `Update user ${user.name}`
+        });
+
         return res.status(200).json({
             succes: true,
             message: "Updated Successfully.",
@@ -203,6 +210,13 @@ export const deteleUser = async (req, res) => {
         user.isActive = false;
 
         await user.save();
+
+        createAuditLog({
+            userId: req.userId,
+            module: "USER",
+            action: "DELETE USER",
+            description: `Delete/Deactivate user ${user.name}`
+        });
 
         return res.status(200).json({
             message: "User deactivated successfully.",

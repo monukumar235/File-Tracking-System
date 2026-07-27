@@ -26,7 +26,7 @@ export const forwardFile = async (req, res) => {
         }
 
         if (file.currentOwner.toString() !== req.userId) {
-            return res.status(400).json({
+            return res.status(403).json({
                 success: false,
                 message: "Access denial."
             });
@@ -108,7 +108,7 @@ export const returnFile = async (req, res) => {
         }).sort({ createAt: -1 });
 
         if (!lastWorkFlow) {
-            return res.status(400).json({
+            return res.status(404).json({
                 success: false,
                 message: "Previous user not found."
             });
@@ -184,7 +184,7 @@ export const approveFile = async (req, res) => {
 
         file.status = "APPROVED";
         file.closedBy = req.userId,
-            file.closedDate = new Date();
+        file.closedDate = new Date();
         await file.save();
 
         await WorkFlowModel.create({
@@ -223,7 +223,7 @@ export const rejectFile = async (req, res) => {
         const { fileId, remarks } = req.body;
 
         if (!mongoose.Types.ObjectId.isValid(fileId)) {
-            return res.status(403).json({
+            return res.status(400).json({
                 success: false,
                 message: "Invalid FileId."
             });
@@ -254,7 +254,7 @@ export const rejectFile = async (req, res) => {
 
         file.status = "REJECTED";
         file.closedBy = req.userId,
-            file.closedDate = new Date();
+        file.closedDate = new Date();
 
         await file.save();
 

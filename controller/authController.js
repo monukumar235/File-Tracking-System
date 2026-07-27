@@ -51,7 +51,7 @@ export const login = async (req, res) => {
             userId : user.id,
             module : "Auth",
             action : "LOGIN",
-            description : "User logged in"
+            description : `${user.role} logged in.`
         });
 
         return res.status(200).json({
@@ -80,7 +80,7 @@ export const logout = async (req, res) => {
             userId : req.userId,
             module : "Auth",
             action : "LOGOUT",
-            description : "User logged out"
+            description : `${req.role} logged out`
         });
         return res.status(200).json({
             success: true,
@@ -120,7 +120,7 @@ export const profile = async (req, res) => {
             userId : user.id,
             module : "Auth",
             action : "PROFILE",
-            description : "User profile"
+            description : `User ${user.name} profile loaded`
         })
 
         return res.status(200).json({

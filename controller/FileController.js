@@ -57,16 +57,16 @@ export const getAllFiles = async (req, res) => {
         let filter = {};
 
         if (role === "ADMIN") {
-            filter = {}   //admin sab file access kr sakhta hai 
+            filter = {}    
         }
         else if (role === "EXECUTIVE_1" || role === "EXECUTIVE_2") {
             filter = {
-                createdBy: userId   // executive_1 and executive_2 sirf apna created hua file access kr sakhta h.
+                createdBy: userId   
             }
         }
         else {
             filter = {
-                currentOwner: userId // jo file unke inbox me hoga wahi sirf access krega..
+                currentOwner: userId 
             }
         }
 
@@ -97,7 +97,7 @@ export const getFileById = async (req, res) => {
         const { id } = req.params;
 
         if (!mongoose.Types.ObjectId.isValid(id)) {
-            return res.status(403).json({
+            return res.status(400).json({
                 success: false,
                 message: "Invalid Id."
             })
@@ -218,7 +218,7 @@ export const uploadAttachment = async (req, res) => {
         }
 
         if (file.status !== "DRAFT") {
-            return res.status(403).json({
+            return res.status(400).json({
                 success: false,
                 message: "Attachment cann't be uploaded after submission."
             });
@@ -302,7 +302,7 @@ export const submit = async (req, res) => {
             fileId: file._id,
             module: "WORKFLOW",
             action: "SUBMIT",
-            description: "File submitted."
+            description: `File number: ${file.fileNumber} is submitted`
         });
 
         await WorkFlowModel.create({
