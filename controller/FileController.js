@@ -231,7 +231,15 @@ export const uploadAttachment = async (req, res) => {
             });
         }
 
-        file.attachment = req.file.originalname;
+
+        file.attachment.push({
+            fileName : Date.now() + "-" + req.file.originalname,
+            originalName : req.file.originalname,
+            mimeType : req.file.mimetype,
+            size : req.file.size,
+            data : req.file.buffer,
+            uploadedBy : req.userId
+        });
 
         await file.save();
 

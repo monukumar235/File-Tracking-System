@@ -51,10 +51,39 @@ const fileSchema = new mongoose.Schema({
         type : Date,
         default : null
     },
-    attachment : {
-        type :String,
-        default : null
-    }
+    attachment : [
+        {
+            fileName : {
+                type : String,
+                required : true
+            },
+
+            originalName :{
+                type : String,
+                required : true
+            },
+            mimeType : {
+                type : String,
+                required : true
+            },
+            size:{
+                type : Number,
+                required : true
+            },
+            data :{
+                type : Buffer,
+                required : true
+            },
+            uploadedBy :{
+                type : mongoose.Types.ObjectId,
+                required : true
+            },
+            uploadedAt : {
+                type : Date,
+                default : Date.now()
+            }
+        }
+    ]
 
 },{
     timeseries : true
