@@ -72,7 +72,8 @@ const fileSchema = new mongoose.Schema({
             },
             data :{
                 type : Buffer,
-                required : true
+                required : true,
+                select : false
             },
             uploadedBy :{
                 type : mongoose.Types.ObjectId,
