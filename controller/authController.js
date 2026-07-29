@@ -47,24 +47,33 @@ export const login = async (req, res) => {
             }
         );
 
-        createAuditLog({
-            userId : user.id,
-            module : "Auth",
-            action : "LOGIN",
-            description : `${user.role} logged in.`
+        res.cookie("token", token, {
+            httpOnly: true,
+            maxAge: 24 * 60 * 60 * 1000
         });
 
-        return res.status(200).json({
-            success: true,
-            message: "Login Successful",
-            token,
-            user: {
-                id: user.id,
-                name: user.name,
-                email: user.email,
-                role: user.role
-            }
+        createAuditLog({
+            userId: user.id,
+            module: "Auth",
+            action: "LOGIN",
+            description: `${user.role} logged in.`
         });
+
+        if (req.originalUrl.startsWith("/api")) {
+            return res.status(200).json({
+                success: true,
+                message: "Login Successful",
+                token,
+                user: {
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    role: user.role
+                }
+            });
+        }
+        return res.redirect("/dashboard");
+
     } catch (error) {
         console.log(error);
         return res.status(500).json({
@@ -76,16 +85,16 @@ export const login = async (req, res) => {
 
 export const logout = async (req, res) => {
     try {
-        createAuditLog({
-            userId : req.userId,
-            module : "Auth",
-            action : "LOGOUT",
-            description : `${req.role} logged out`
-        });
-        return res.status(200).json({
-            success: true,
-            message: "Successfully loged out.."
-        });
+       
+        if (req.originalUrl.startsWith("/api")) {
+            return res.status(200).json({
+                success: true,
+                message: "Successfully loged out.."
+            });
+        }
+        res.clearCookie("token");
+        res.redirect("/login");
+
     } catch (error) {
         return res.status(500).json({
             success: false,
@@ -117,10 +126,10 @@ export const profile = async (req, res) => {
         }
 
         createAuditLog({
-            userId : user.id,
-            module : "Auth",
-            action : "PROFILE",
-            description : `User ${user.name} profile loaded`
+            userId: user.id,
+            module: "Auth",
+            action: "PROFILE",
+            description: `User ${user.name} profile loaded`
         })
 
         return res.status(200).json({

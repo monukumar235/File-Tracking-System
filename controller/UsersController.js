@@ -2,12 +2,14 @@ import UserModel from "../models/User.js";
 import bcrypt from "bcryptjs";
 import mongoose from "mongoose";
 import createAuditLog from "../utils/Audit.js";
+import { getAllUsersData } from "../services/userService.js";
 
 
 
 export const createUsers = async (req, res) => {
     try {
         const { name, email, password, role, reportingTo } = req.body;
+
 
         if (!name || !email || !password || !role) {
             return res.status(400).json({
@@ -38,11 +40,14 @@ export const createUsers = async (req, res) => {
             description: `Created user ${user.name}`
         });
 
-        return res.status(201).json({
-            succes: true,
-            message: "User created successfully",
-            data: userResponse
-        });
+        if (req.originalUrl.startsWith("/api")) {
+            return res.status(201).json({
+                succes: true,
+                message: "User created successfully",
+                data: userResponse
+            });
+        }
+        res.redirect("/users")
 
     } catch (error) {
         return res.status(500).json({
@@ -55,7 +60,8 @@ export const createUsers = async (req, res) => {
 
 export const getAllUsers = async (req, res) => {
     try {
-        const users = await UserModel.find({ isActive: true }).select("-password").populate("reportingTo", "name email role");
+
+        const users = await getAllUsersData();
 
         if (!users) {
             return res.status(404).json({
@@ -136,16 +142,7 @@ export const updateUser = async (req, res) => {
             });
         }
 
-        if (email || email != user.email) {
-
-            const existingUser = await UserModel.findOne({ email });
-
-            if (existingUser) {
-                return res.status(400).json({
-                    succes: false,
-                    message: "Email already exists,"
-                });
-            }
+        if (email) {
 
             user.email = email;
         }
@@ -173,11 +170,14 @@ export const updateUser = async (req, res) => {
             description: `Update user ${user.name}`
         });
 
-        return res.status(200).json({
-            succes: true,
-            message: "Updated Successfully.",
-            data: updateUser
-        });
+        if (req.originalUrl.startsWith("/api")) {
+            return res.status(200).json({
+                succes: true,
+                message: "Updated Successfully.",
+                data: updateUser
+            });
+        }
+        res.redirect("/users")
     } catch (error) {
         return res.status(500).json({
             succes: true,
@@ -218,10 +218,13 @@ export const deteleUser = async (req, res) => {
             description: `Delete/Deactivate user ${user.name}`
         });
 
-        return res.status(200).json({
-            message: "User deactivated successfully.",
-            sucess: true
-        });
+        if (req.originalUrl.startsWith("/api")) {
+            return res.status(200).json({
+                message: "User deactivated successfully.",
+                sucess: true
+            });
+        }
+        res.redirect("/users")
     } catch (error) {
         return res.status(500).json({
             success: false,

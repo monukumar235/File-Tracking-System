@@ -62,10 +62,14 @@ export const forwardFile = async (req, res) => {
             description: "File forwarded"
         });
 
-        return res.status(200).json({
-            success: true,
-            message: "File forwarded successfully."
-        });
+        if(req.originalUrl.startsWith("/api")){
+            return res.status(200).json({
+                success: true,
+                message: "File forwarded successfully."
+            });
+        }
+        res.redirect("/workflow/inbox");
+
     } catch (error) {
         return res.status(500).json({
             success: false,
@@ -78,6 +82,7 @@ export const forwardFile = async (req, res) => {
 export const returnFile = async (req, res) => {
     try {
         const { fileId, remarks } = req.body;
+
 
         if (!mongoose.Types.ObjectId.isValid(fileId)) {
             return res.status(400).json({
@@ -134,10 +139,13 @@ export const returnFile = async (req, res) => {
             description: "File returned"
         });
 
-        return res.status(200).json({
-            success: true,
-            message: "File return successfully."
-        });
+        if(req.originalUrl.startsWith("/api")){
+            return res.status(200).json({
+                success: true,
+                message: "File return successfully."
+            });
+        }
+        res.redirect("/workflow/inbox");
 
     } catch (error) {
         return res.status(500).json({

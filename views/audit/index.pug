@@ -1,0 +1,59 @@
+extends ../layout/layout
+
+block content
+
+    h2.mb-4 Audit Logs
+
+    .card.shadow
+
+        .card-body
+
+            table.table.table-hover
+
+                thead.table-dark
+
+                    tr
+                        th User
+                        th Module
+                        th Action
+                        th Description
+                        th Date
+
+                tbody
+
+                    if logs.length
+
+                        each log in logs
+
+                            tr
+
+                                td= log.user
+
+                                td= log.module
+
+                                td
+
+                                    if log.action=="CREATE"
+                                        span.badge.bg-primary CREATE
+
+                                    else if log.action=="SUBMIT"
+                                        span.badge.bg-warning.text-dark SUBMIT
+
+                                    else if log.action=="FORWARD"
+                                        span.badge.bg-info FORWARD
+
+                                    else if log.action=="APPROVE"
+                                        span.badge.bg-success APPROVE
+
+                                    else
+                                        span.badge.bg-danger= log.action
+
+                                td= log.description
+
+                                td= log.date
+
+                    else
+
+                        tr
+                            td.text-center(colspan="5")
+                                | No Audit Logs Found

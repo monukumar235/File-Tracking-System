@@ -1,0 +1,34 @@
+extends ../layout/layout
+
+block content
+
+    h2.mb-4 Outbox
+
+    .card.shadow
+
+        .card-body
+
+            table.table.table-hover
+
+                thead.table-dark
+
+                    tr
+                        th File No
+                        th Subject
+                        th Sent To
+                        th Status
+
+                tbody
+
+                    each file in outbox
+
+                        tr
+
+                            td= file.fileNumber
+
+                            td= file.subject
+
+                            td= file.sentTo
+
+                            td
+                                span.badge.bg-warning.text-dark= file.status

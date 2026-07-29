@@ -1,0 +1,50 @@
+extends ../layout/layout
+
+block content
+
+    .d-flex.justify-content-between.align-items-center.mb-4
+        h2 User Management
+
+        a.btn.btn-primary(href="/users/create")
+            | Create User
+
+    .card.shadow
+        .card-body
+            table.table.table-hover
+                thead.table-dark
+                    tr
+                        th Name
+                        th Email
+                        th Role
+                        th Action
+
+                tbody
+                    if users.length
+                        each user in users
+                            tr
+                                td= user.name
+
+                                td= user.email
+
+                                td
+                                    span.badge.bg-primary= user.role
+
+                                td
+                                    a.btn.btn-sm.btn-primary.me-2(
+                                        href=`/users/edit/${user._id}`
+                                    ) Edit
+
+                                    form(
+                                        action=`/users/delete/${user._id}`
+                                        method="POST"
+                                        style="display:inline;"
+                                    )
+                                        button.btn.btn-sm.btn-danger(
+                                            type="submit"
+                                            onclick="return confirm('Are you sure you want to delete this user?')"
+                                        ) Delete
+
+                    else
+                        tr
+                            td.text-center(colspan="4")
+                                | No Users Found

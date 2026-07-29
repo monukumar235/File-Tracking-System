@@ -1,0 +1,73 @@
+extends ../layout/layout
+
+block content
+
+    .container.mt-4
+
+        .d-flex.justify-content-between.align-items-center.mb-4
+            h2 Create File
+
+            a.btn.btn-secondary(href="/files")
+                | Back
+
+        .card.shadow
+
+            .card-body
+
+                form(
+                    action="/files/create"
+                    method="POST"
+                )
+
+                    .mb-3
+                        label.form-label Subject
+
+                        input.form-control(
+                            type="text"
+                            name="subject"
+                            placeholder="Enter Subject"
+                            required
+                        )
+
+                    .mb-3
+                        label.form-label Description
+
+                        textarea.form-control(
+                            name="description"
+                            rows="5"
+                            placeholder="Enter Description"
+                            required
+                        )
+
+                    .mb-3
+
+                        label.form-label Priority
+
+                        select.form-select(
+                            name="priority"
+                            required
+                        )
+
+                            option(value="")
+                                | Select Priority
+
+                            option(value="LOW")
+                                | LOW
+
+                            option(value="MEDIUM")
+                                | MEDIUM
+
+                            option(value="HIGH")
+                                | HIGH
+
+                    .d-flex.gap-2
+
+                        button.btn.btn-success(
+                            type="submit"
+                        )
+                            | Save
+
+                        a.btn.btn-secondary(
+                            href="/files"
+                        )
+                            | Cancel

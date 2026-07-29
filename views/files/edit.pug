@@ -1,0 +1,89 @@
+extends ../layout/layout
+
+block content
+
+    .container.mt-4
+
+        .d-flex.justify-content-between.align-items-center.mb-4
+            h2 Edit File
+
+            a.btn.btn-secondary(href="/files")
+                | Back
+
+        .card.shadow
+
+            .card-body
+
+                form(
+                    action=`/files/edit/${file._id}`
+                    method="POST"
+                    
+                )
+
+                    .mb-3
+                        label.form-label File Number
+
+                        input.form-control(
+                            type="text"
+                            value=file.fileNumber
+                            readonly
+                        )
+
+                    .mb-3
+                        label.form-label Subject
+
+                        input.form-control(
+                            type="text"
+                            name="subject"
+                            value=file.subject
+                            required
+                        )
+
+                    .mb-3
+                        label.form-label Description
+
+                        textarea.form-control(
+                            name="description"
+                            rows="5"
+                            required
+                        )= file.description
+
+                    .mb-3
+                        label.form-label Priority
+
+                        select.form-select(name="priority")
+
+                            option(
+                                value="LOW"
+                                selected=file.priority=="LOW"
+                            ) LOW
+
+                            option(
+                                value="MEDIUM"
+                                selected=file.priority=="MEDIUM"
+                            ) MEDIUM
+
+                            option(
+                                value="HIGH"
+                                selected=file.priority=="HIGH"
+                            ) HIGH
+
+                    
+                    .d-flex.gap-2.mt-4
+
+                        button.btn.btn-success(
+                            type="submit"
+                        )
+                            | Update Draft
+
+                        button.btn.btn-primary(
+                            formaction=`/files/submit/${file._id}`
+                            formmethod="POST"
+                            type="submit"
+                        )
+                            | Submit File
+
+                        a.btn.btn-secondary(
+                            href="/files"
+                        )
+                            | Cancel

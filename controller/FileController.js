@@ -10,6 +10,8 @@ export const createFile = async (req, res) => {
     try {
         const { subject, description, priority } = req.body;
 
+        console.log(req.body)
+
         if (!subject) {
             return res.status(404).json({
                 success: false,
@@ -36,15 +38,21 @@ export const createFile = async (req, res) => {
             description: `File ${file, fileNumber} created`
         });
 
-        return res.status(201).json({
-            success: true,
-            message: "File created successfully.",
-            data: file
-        })
+        if (req.originalUrl.startsWith("/api")) {
+
+            return res.status(201).json({
+                success: true,
+                message: "File created successfully.",
+                data: file
+            });
+        }
+        res.redirect("/files");
+
     } catch (error) {
         return res.status(500).json({
             success: false,
-            message: "Internal server error"
+            message: "Internal server error",
+            error : error.message
         });
     }
 }
@@ -54,23 +62,7 @@ export const getAllFiles = async (req, res) => {
         const userId = req.userId;
         const role = req.roles;
 
-        let filter = {};
-
-        if (role === "ADMIN") {
-            filter = {}    
-        }
-        else if (role === "EXECUTIVE_1" || role === "EXECUTIVE_2") {
-            filter = {
-                createdBy: userId   
-            }
-        }
-        else {
-            filter = {
-                currentOwner: userId 
-            }
-        }
-
-        const file = await FileModel.find(filter).populate("createdBy", "name role").populate("currentOwner", "name role").sort({ createdAt: -1 });
+        const file = await getAllFilesData(userId, role);
 
         if (!file) {
             return res.status(404).json({
@@ -179,11 +171,15 @@ export const updateFile = async (req, res) => {
 
         await file.save();
 
-        return res.status(200).json({
-            success: true,
-            message: "File updated successfully",
-            data: file
-        })
+        if(req.originalUrl.startsWith("/api")){
+            return res.status(200).json({
+                success: true,
+                message: "File updated successfully",
+                data: file
+            });
+        }
+        res.redirect("/files")
+
     } catch (error) {
 
     }
@@ -233,21 +229,26 @@ export const uploadAttachment = async (req, res) => {
 
 
         file.attachment.push({
-            fileName : Date.now() + "-" + req.file.originalname,
-            originalName : req.file.originalname,
-            mimeType : req.file.mimetype,
-            size : req.file.size,
-            data : req.file.buffer,
-            uploadedBy : req.userId
+            fileName: Date.now() + "-" + req.file.originalname,
+            originalName: req.file.originalname,
+            mimeType: req.file.mimetype,
+            size: req.file.size,
+            data: req.file.buffer,
+            uploadedBy: req.userId
         });
 
         await file.save();
 
-        return res.status(200).json({
-            success: true,
-            message: "Attachment uploaded successfully.",
-            data: file
-        })
+
+        if(req.originalUrl.startsWith("/api")){
+            return res.status(200).json({
+                success: true,
+                message: "Attachment uploaded successfully.",
+                data: file
+            })
+        }
+        
+        res.redirect("/files");
     } catch (error) {
         return res.status(500).json({
             success: false,
@@ -267,7 +268,7 @@ export const submit = async (req, res) => {
                 message: "Invalid Id."
             });
         }
-        
+
         const file = await FileModel.findById(id);
 
         if (!file) {
@@ -320,11 +321,14 @@ export const submit = async (req, res) => {
             remark: "File Submitted"
         });
 
-        return res.status(200).json({
-            success: true,
-            message: "File Submitted successfully.",
-            data: file
-        });
+        if(req.originalUrl.startsWith("/api")){
+            return res.status(200).json({
+                success: true,
+                message: "File Submitted successfully.",
+                data: file
+            });
+        }
+        res.redirect("/files")
     } catch (error) {
         return res.status(500).json({
             success: false,

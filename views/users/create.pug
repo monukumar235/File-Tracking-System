@@ -1,0 +1,50 @@
+extends ../layout/layout
+
+block content
+
+    h2.mb-4 Create User
+
+    .card.shadow
+
+        .card-body
+
+            form(action="/users/create" method="POST")
+
+                .mb-3
+
+                    label Name
+
+                    input.form-control(type="text" name="name" required)
+
+                .mb-3
+
+                    label Email
+
+                    input.form-control(type="email" name="email" required)
+
+                .mb-3
+
+                    label Password
+
+                    input.form-control(type="password" name="password" required)
+
+                .mb-3
+
+                    label Role
+
+                    select.form-select(name = "role")
+
+                        option ADMIN
+                        option EXECUTIVE_2
+                        option EXECUTIVE_1
+                        option DIRECTOR
+                        option SECRETARY
+                        option MINISTER
+                .mb-3
+
+                    label ReportingTO
+
+                    input.form-control(type="text" name="reportingTo")
+
+                button.btn.btn-success
+                    | Save User

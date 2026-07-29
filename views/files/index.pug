@@ -1,0 +1,85 @@
+extends ../layout/layout
+
+block content
+
+    .d-flex.justify-content-between.align-items-center.mb-4
+        h2 File Management
+
+        a.btn.btn-primary(href="/files/create")
+            | Create File
+
+    .card.shadow
+        .card-body
+
+            table.table.table-hover
+
+                thead.table-dark
+                    tr
+                        th File No.
+                        th Subject
+                        th Priority
+                        th Status
+                        th Current Owner
+                        th Action
+
+                tbody
+
+                    if files.length
+
+                        each file in files
+
+                            tr
+                                td= file.fileNumber
+
+                                td= file.subject
+
+                                td= file.priority
+
+                                td
+                                    if file.status === "DRAFT"
+                                        span.badge.bg-secondary= file.status
+                                    else if file.status === "SUBMITTED"
+                                        span.badge.bg-primary= file.status
+                                    else if file.status === "IN_PROGRESS"
+                                        span.badge.bg-warning.text-dark= file.status
+                                    else if file.status === "APPROVED"
+                                        span.badge.bg-success= file.status
+                                    else if file.status === "REJECTED"
+                                        span.badge.bg-danger= file.status
+                                    else
+                                        span.badge.bg-info= file.status
+
+                                td= file.currentOwner ? file.currentOwner.name : "-"
+
+                                td
+                                    a.btn.btn-sm.btn-success.me-1(
+                                        href=`/files/view/${file._id}`
+                                    ) View
+
+                                    if file.status === "DRAFT"
+
+                                        a.btn.btn-sm.btn-warning.me-1(
+                                            href=`/files/edit/${file._id}`
+                                        ) Edit
+
+                                        a.btn.btn-sm.btn-info.me-1(
+                                            href=`/files/upload/${file._id}`
+                                        ) Upload
+
+                                        form(
+                                            action=`/files/submit/${file._id}`
+                                            method="POST"
+                                            style="display:inline;"
+                                        )
+                                            button.btn.btn-sm.btn-primary.me-1(
+                                                type="submit"
+                                                onclick="return confirm('Submit this file?')"
+                                            ) Submit
+
+                            
+
+                    else
+
+                        tr
+                            td.text-center(colspan="6")
+                                | No Files Found

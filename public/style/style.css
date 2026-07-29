@@ -1,0 +1,16 @@
+body{
+    background:#f5f7fa;
+}
+
+.card{
+    border-radius:10px;
+}
+
+.list-group-item{
+    border:none;
+}
+
+.list-group-item:hover{
+    background:#0d6efd;
+    color:white;
+}

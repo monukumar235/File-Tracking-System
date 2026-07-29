@@ -1,0 +1,43 @@
+extends ../layout/layout
+
+block content
+
+    h2.mb-4 Workflow
+
+    .card.shadow.mb-4
+
+        .card-body
+
+            h4 Road Construction
+
+            p
+                strong File Number :
+                |  FTS-001
+
+            p
+                strong Current Owner :
+                | Director
+
+            p
+                strong Status :
+                span.badge.bg-primary SUBMITTED
+
+    .card.shadow
+
+        .card-body
+
+            h5 Add Remark
+
+            textarea.form-control(rows="4")
+
+            br
+
+            .d-flex.gap-2
+
+                button.btn.btn-primary Forward
+
+                button.btn.btn-warning Return
+
+                button.btn.btn-success Approve
+
+                button.btn.btn-danger Reject
