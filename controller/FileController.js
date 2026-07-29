@@ -267,8 +267,8 @@ export const submit = async (req, res) => {
                 message: "Invalid Id."
             });
         }
-
-        const file = await FileModel.findById(id).populate("createdBy","name role").populate("currentOwner", "name role");
+        
+        const file = await FileModel.findById(id);
 
         if (!file) {
             return res.status(404).json({
@@ -276,7 +276,6 @@ export const submit = async (req, res) => {
                 message: "File not found"
             });
         }
-
         if (file.createdBy.toString() !== req.userId) {
             return res.status(403).json({
                 success: false,
