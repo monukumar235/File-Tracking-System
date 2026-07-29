@@ -268,7 +268,7 @@ export const submit = async (req, res) => {
             });
         }
 
-        const file = await FileModel.findById(id);
+        const file = await FileModel.findById(id).populate("createdBy","name role").populate("currentOwner", "name role");
 
         if (!file) {
             return res.status(404).json({
