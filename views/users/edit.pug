@@ -1,0 +1,58 @@
+extends ../layout/layout
+
+block content
+
+    h2.mb-4 Edit User
+
+    form(action=`/users/edit/${user._id}` method="POST")
+
+        .mb-3
+            label Name
+            input.form-control(
+                type="text"
+                name="name"
+                value=user.name
+            )
+
+        .mb-3
+            label Email
+            input.form-control(
+                type="email"
+                name="email"
+                value=user.email
+            )
+
+        .mb-3
+            label Role
+            select.form-select(name="role")
+
+                option(
+                    value="ADMIN"
+                    selected=user.role=="ADMIN"
+                ) ADMIN
+                option(
+                    value="MINISTER"
+                    selected=user.role=="MINISTER"
+                ) MINISTER
+                option(
+                    value="DIRECTOR"
+                    selected=user.role=="DIRECTOR"
+                ) DIRECTOR
+
+                option(
+                    value="SECRETARY"
+                    selected=user.role=="SECRETARY"
+                ) SECRETARY
+
+                option(
+                    value="EXECUTIVE_1"
+                    selected=user.role=="EXECUTIVE_1"
+                ) EXECUTIVE-1
+
+                option(
+                    value="EXECUTIVE_2"
+                    selected=user.role=="EXECUTIVE_2"
+                ) EXECUTIVE-2
+
+        button.btn.btn-primary(type="submit")
+            | Update

@@ -1,0 +1,151 @@
+extends ../layout/layout
+
+block content
+
+    .container.mt-4
+
+        .d-flex.justify-content-between.align-items-center.mb-4
+            h2 Workflow Details
+
+            a.btn.btn-secondary(href="/workflow/inbox")
+                | Back
+
+        .card.shadow.mb-4
+
+            .card-header.bg-primary.text-white
+                h5.mb-0= file.fileNumber
+
+            .card-body
+
+                .row
+                    .col-md-6.mb-3
+                        label.form-label.fw-bold Subject
+                        p= file.subject
+
+                    .col-md-6.mb-3
+                        label.form-label.fw-bold Priority
+                        p= file.priority
+
+                .mb-3
+                    label.form-label.fw-bold Description
+                    p.border.rounded.p-3= file.description
+
+                .row
+                    .col-md-6.mb-3
+                        label.form-label.fw-bold Status
+                        span.badge.bg-info= file.status
+
+                    .col-md-6.mb-3
+                        label.form-label.fw-bold Current Owner
+                        p= file.currentOwner ? file.currentOwner.name : "-"
+
+                .row
+                    .col-md-6.mb-3
+                        label.form-label.fw-bold Created By
+                        p= file.createdBy ? file.createdBy.name : "-"
+
+                    .col-md-6.mb-3
+                        label.form-label.fw-bold Created Date
+                        p= file.createdAt
+
+        .card.shadow.mb-4
+
+            .card-header.bg-secondary.text-white
+                h5.mb-0 Attachments
+
+            .card-body
+
+                if file.attachment && file.attachment.length
+
+                    table.table.table-bordered
+
+                        thead
+                            tr
+                                th File Name
+                                th Action
+
+                        tbody
+                            each attachment in file.attachment
+
+                                tr
+                                    td= attachment.originalName
+
+                                    td
+                                        a.btn.btn-sm.btn-success(
+                                            href=`/uploads/${attachment.fileName}`
+                                            target="_blank"
+                                        ) View
+
+                else
+
+                    p.text-muted No Attachments
+
+        .card.shadow
+
+            .card-header.bg-dark.text-white
+                h5.mb-0 Workflow Action
+
+            .card-body
+
+                textarea.form-control.mb-3(
+                    id="remarks"
+                    rows="4"
+                    placeholder="Enter remarks..."
+                    name = "remarks"
+                )
+
+                if role !== "MINISTER"
+
+                    form(
+                        action="/workFlow/forward"
+                        method="POST"
+                        style="display:inline;"
+                        onsubmit="document.getElementById('forwardRemarks').value=document.getElementById('remarks').value"
+                    )
+
+                        input(type="hidden" name="fileId" value=file._id)
+                        input(type="hidden" id="forwardRemarks" name="remarks")
+
+                        button.btn.btn-primary.me-2(type="submit")
+                            | Forward
+
+                    form(
+                        action="/workFlow/sendBack"
+                        method="POST"
+                        style="display:inline;"
+                        onsubmit="document.getElementById('sendBackRemarks').value=document.getElementById('remarks').value"
+                    )
+
+                        input(type="hidden" name="fileId" value=file._id)
+                        input(type="hidden" id="sendBackRemarks" name="remarks")
+
+                        button.btn.btn-warning(type="submit")
+                            | Send Back
+
+                if role === "MINISTER"
+
+                    form(
+                        action="/workFlow/approve"
+                        method="POST"
+                        style="display:inline;"
+                        onsubmit="document.getElementById('approveRemarks').value=document.getElementById('remarks').value"
+                    )
+
+                        input(type="hidden" name="fileId" value=file._id)
+                        input(type="hidden" id="approveRemarks" name="remarks")
+
+                        button.btn.btn-success.me-2(type="submit")
+                            | Approve
+
+                    form(
+                        action="/workFlow/reject"
+                        method="POST"
+                        style="display:inline;"
+                        onsubmit="document.getElementById('rejectRemarks').value=document.getElementById('remarks').value"
+                    )
+
+                        input(type="hidden" name="fileId" value=file._id)
+                        input(type="hidden" id="rejectRemarks" name="remarks")
+
+                        button.btn.btn-danger(type="submit")
+                            | Reject

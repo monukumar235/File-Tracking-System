@@ -1,0 +1,104 @@
+extends ../layout/layout
+
+block content
+
+    .container.mt-4
+
+        .d-flex.justify-content-between.align-items-center.mb-4
+            h2 File Details
+
+            a.btn.btn-secondary(href="/files")
+                | Back
+
+        .card.shadow
+
+            .card-header.bg-primary.text-white
+                h5.mb-0 #{file.fileNumber}
+
+            .card-body
+
+                .row.mb-3
+
+                    .col-md-6
+                        label.form-label.fw-bold Subject
+                        p.form-control-plaintext= file.subject
+
+                    .col-md-6
+                        label.form-label.fw-bold Priority
+                        p.form-control-plaintext= file.priority
+
+                .mb-3
+
+                    label.form-label.fw-bold Description
+
+                    p.border.rounded.p-3= file.description
+
+                .row.mb-3
+
+                    .col-md-6
+                        label.form-label.fw-bold Status
+                        span.badge.bg-info= file.status
+
+                    .col-md-6
+                        label.form-label.fw-bold Created By
+                        p.form-control-plaintext= file.createdBy ? file.createdBy.name : "-"
+
+                .row.mb-3
+
+                    .col-md-6
+                        label.form-label.fw-bold Current Owner
+                        p.form-control-plaintext= file.currentOwner ? file.currentOwner.name : "-"
+
+                    .col-md-6
+                        label.form-label.fw-bold Created On
+                        p.form-control-plaintext= file.createdAt
+
+                hr
+
+                h5 Attachments
+
+                if file.attachment && file.attachment.length
+
+                    table.table.table-bordered
+
+                        thead
+                            tr
+                                th File Name
+                                th Action
+
+                        tbody
+
+                            each att in file.attachment
+
+                                tr
+
+                                    td= att.originalName
+
+                                    td
+
+                                        a.btn.btn-sm.btn-primary(
+                                            href=`/uploads/${att.fileName}`
+                                            target="_blank"
+                                        )
+                                            | View
+
+                else
+
+                    p.text-muted
+                        | No attachment uploaded.
+
+                hr
+
+                .d-flex.gap-2
+
+                    if file.status === "DRAFT"
+
+                        a.btn.btn-warning(
+                            href=`/files/edit/${file._id}`
+                        )
+                            | Edit
+
+                    a.btn.btn-secondary(
+                        href="/files"
+                    )
+                        | Back

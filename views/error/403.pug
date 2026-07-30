@@ -1,0 +1,28 @@
+extends ../layout/layout
+
+block content
+
+    .container.mt-5
+
+        .text-center
+
+            h1.display-1.text-warning 403
+
+            h3.mt-3 Access Denied
+
+            p.text-muted
+                | You don't have permission to access this page.
+
+            img(
+                src="https://cdn-icons-png.flaticon.com/512/564/564619.png"
+                width="180"
+                class="mb-4"
+            )
+
+            br
+
+            a.btn.btn-primary.me-2(href="/dashboard")
+                | Go to Dashboard
+
+            a.btn.btn-secondary(href="javascript:history.back()")
+                | Go Back

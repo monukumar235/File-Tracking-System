@@ -1,0 +1,71 @@
+extends ../layout/layout
+
+block content
+
+    h2.mb-4 Dashboard
+
+    .row
+
+        .col-md-3
+            .card.text-center.shadow-sm.mb-3
+                .card-body
+                    h5 Total Files
+                    h2.text-primary= dashboard.myCreatedFile
+
+        .col-md-3
+            .card.text-center.shadow-sm.mb-3
+                .card-body
+                    h5 Inbox
+                    h2.text-warning= dashboard.myInbox
+
+        .col-md-3
+            .card.text-center.shadow-sm.mb-3
+                .card-body
+                    h5 Approved
+                    h2.text-success= dashboard.approved
+
+        .col-md-3
+            .card.text-center.shadow-sm.mb-3
+                .card-body
+                    h5 Rejected
+                    h2.text-danger= dashboard.rejected
+        .col-md-3
+            .card.text-center.shadow-sm.mb-3
+                .card-body
+                    h5 Pending
+                    h2.text-primary= dashboard.pending
+        .col-md-3
+            .card.text-center.shadow-sm.mb-3
+                .card-body
+                    h5 Draft
+                    h2.text-primary= dashboard.draft
+    .card.shadow.mt-4
+
+        .card-header.bg-dark.text-white
+            h5.mb-0 Recent Files
+
+        .card-body
+
+            table.table.table-bordered.table-hover
+
+                thead
+                    tr
+                        th File Number
+                        th Subject
+                        th Status
+
+                tbody
+
+                    if recentFiles && recentFiles.length
+
+                        each file in recentFiles
+
+                            tr
+                                td= file.fileNumber
+                                td= file.subject
+                                td= file.status
+
+                    else
+
+                        tr
+                            td.text-center(colspan="3") No Files Found

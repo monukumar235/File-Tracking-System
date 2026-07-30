@@ -1,0 +1,100 @@
+extends ../layout/layout
+
+block content
+
+    .container.mt-4
+
+        .d-flex.justify-content-between.align-items-center.mb-4
+
+            h2 File Audit Trail
+
+            a.btn.btn-secondary(href="/files")
+                | Back
+
+        .card.shadow.mb-4
+
+            .card-header.bg-primary.text-white
+
+                h5.mb-0 File Information
+
+            .card-body
+
+                .row
+
+                    .col-md-6
+                        strong File Number:
+                        p= file.fileNumber
+
+                    .col-md-6
+                        strong Subject:
+                        p= file.subject
+
+        .card.shadow
+
+            .card-header.bg-dark.text-white
+
+                h5.mb-0 Audit History
+
+            .card-body
+
+                if logs && logs.length
+
+                    table.table.table-bordered.table-hover
+
+                        thead.table-dark
+
+                            tr
+                                th #
+                                th User
+                                th Role
+                                th Module
+                                th Action
+                                th Description
+                                th Date
+                                
+
+                        tbody
+
+                            each log, index in logs
+
+                                tr
+
+                                    td= index + 1
+
+                                    td= log.userId ? log.userId.name : "-"
+
+                                    td= log.userId ? log.userId.role : "-"
+
+                                    td= log.module
+
+                                    td
+
+                                        if log.action === "CREATE"
+                                            span.badge.bg-primary CREATE
+
+                                        else if log.action === "SUBMIT"
+                                            span.badge.bg-info SUBMIT
+
+                                        else if log.action === "FORWARD"
+                                            span.badge.bg-warning.text-dark FORWARD
+
+                                        else if log.action === "RETURN"
+                                            span.badge.bg-secondary SEND BACK
+
+                                        else if log.action === "APPROVE"
+                                            span.badge.bg-success APPROVE
+
+                                        else if log.action === "REJECT"
+                                            span.badge.bg-danger REJECT
+
+                                        else
+                                            span.badge.bg-dark= log.action
+
+                                    td= log.description
+                                    td= new Date(log.createdAt).toLocaleString()
+                                    
+
+                else
+
+                    p.text-center.text-muted.mt-3
+                        | No Audit Logs Found.

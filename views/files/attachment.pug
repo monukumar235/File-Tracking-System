@@ -1,0 +1,92 @@
+extends ../layout/layout
+
+block content
+
+    .container.mt-4
+
+        .d-flex.justify-content-between.align-items-center.mb-4
+            h2 Upload Attachment
+
+            a.btn.btn-secondary(href="/files")
+                | Back
+
+        .card.shadow
+
+            .card-body
+
+                h5.mb-3 File Details
+
+                .row.mb-3
+
+                    .col-md-6
+                        label.form-label File Number
+                        input.form-control(
+                            type="text"
+                            value=file.fileNumber
+                            readonly
+                        )
+
+                    .col-md-6
+                        label.form-label Subject
+                        input.form-control(
+                            type="text"
+                            value=file.subject
+                            readonly
+                        )
+
+                form(
+                    action=`/files/upload/${file._id}`
+                    method="POST"
+                    enctype="multipart/form-data"
+                )
+
+                    .mb-3
+                        label.form-label Select Attachment
+
+                        input.form-control(
+                            type="file"
+                            name="attachment"
+                            required
+                        )
+
+                    button.btn.btn-primary(type="submit")
+                        | Upload Attachment
+
+                    a.btn.btn-secondary.ms-2(href="/files")
+                        | Cancel
+
+                hr
+
+                h5 Existing Attachments
+
+                if file.attachments && file.attachments.length
+
+                    table.table.table-bordered.mt-3
+
+                        thead
+                            tr
+                                th #
+                                th File Name
+                                th Action
+
+                        tbody
+
+                            each attachment, index in file.attachments
+
+                                tr
+
+                                    td= index + 1
+
+                                    td= attachment.originalName
+
+                                    td
+                                        a.btn.btn-sm.btn-success(
+                                            href=`/uploads/${attachment.fileName}`
+                                            target="_blank"
+                                        )
+                                            | View
+
+                else
+
+                    p.text-muted.mt-3
+                        | No attachments uploaded.

@@ -1,26 +1,33 @@
 import jwt from "jsonwebtoken";
 
 
- export const authenticate = (req,res, next)=>{
+export const authenticate = (req, res, next) => {
     try {
-        const token = req.headers.authorization;
+        const token =
+            req.cookies?.token ||
+            req.headers.authorization?.split(" ")[1];
 
-        if(!token){
-            return res.status(404).json({
-                succss : false,
-                message : "Token Missing in header"
-            });
+        
+
+        if (!token) {
+            if(req.originalUrl.startsWith("/api")){
+                return res.status(403).json({
+                    succss: false,
+                    message: "Unauthorized"
+                });
+            }
+            return res.redirect("/error/403");
         }
 
-        const decode = jwt.verify(token,process.env.SECRET_KEY);
+        const decode = jwt.verify(token, process.env.SECRET_KEY);
         req.roles = decode.role;
         req.userId = decode.userId
         next();
     } catch (error) {
         return res.status(500).json({
-            succss : false,
-            message : "Invalid token",
-            error : error.message
+            succss: false,
+            message: "Invalid token",
+            error: error.message
         })
     }
 }

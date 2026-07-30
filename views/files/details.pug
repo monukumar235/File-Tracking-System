@@ -1,0 +1,42 @@
+extends ../layout/layout
+
+block content
+
+    h2.mb-4 File Details
+
+    .card.shadow
+
+        .card-body
+
+            h4 Subject : Road Construction
+
+            p
+                strong File Number :
+                |  FTS-001
+
+            p
+                strong Status :
+                span.badge.bg-primary SUBMITTED
+
+            p
+                strong Priority :
+                span.badge.bg-danger HIGH
+
+            hr
+
+            h5 Attachment
+
+            button.btn.btn-secondary
+                | Upload Attachment
+
+            hr
+
+            h5 Workflow Actions
+
+            button.btn.btn-primary Forward
+
+            button.btn.btn-warning.ms-2 Return
+
+            button.btn.btn-success.ms-2 Approve
+
+            button.btn.btn-danger.ms-2 Reject
