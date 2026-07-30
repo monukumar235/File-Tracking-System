@@ -23,7 +23,9 @@ import { createUsers, updateUser,deteleUser } from "./controller/UsersController
 import User from "./models/User.js";
 import { createFile, submit, updateFile, uploadAttachment } from "./controller/FileController.js";
 import upload from "./middleware/AttachmentMiddleWare.js";
-import { forwardFile, returnFile } from "./controller/WorkFlowController.js";
+import { approveFile, forwardFile, rejectFile, returnFile } from "./controller/WorkFlowController.js";
+import AuditLogsModel from "./models/AuditLogsModel.js";
+import WorkFlowModel from "./models/WorkFlowModel.js";
 
 
 
@@ -172,67 +174,38 @@ app.get("/workflow/view/:id",authenticate,async(req,res)=>{
     });
 });
 
-app.post("/workflow/forward",authenticate,forwardFile)
-app.post("/workflow/sendBack",authenticate,returnFile)
+app.post("/workflow/forward",authenticate,forwardFile);
+app.post("/workflow/sendBack",authenticate,returnFile);
+app.post("/workflow/approve",authenticate,approveFile);
+app.post("/workflow/reject",authenticate,rejectFile);
 
 
-app.get("/workflow/outbox", (req, res) => {
 
-    const outbox = [
-        {
-            fileNumber: "FTS-003",
-            subject: "Bridge Construction",
-            sentTo: "Director",
-            status: "PENDING"
+
+app.get("/workflow/outbox",authenticate, async(req, res) => {
+
+    const files = await File.find({
+        createdBy : req.userId,
+        status : {
+            $ne : "DRAFT"
         }
-    ];
+    }).populate("currentOwner","name role").sort({createdAt : -1});
 
-    res.render("workflow/outbox", { outbox });
+    res.render("workflow/outbox", { files });
 
 });
 
 
-app.get("/audit", (req, res) => {
+app.get("/audit/file/:id", authenticate,async(req, res) => {
 
-    const logs = [
-        {
-            user: "Admin",
-            module: "USER",
-            action: "CREATE",
-            description: "Created Executive-2",
-            date: "29-Jul-2026 10:30 AM"
-        },
-        {
-            user: "Executive-2",
-            module: "FILE",
-            action: "CREATE",
-            description: "Created File FTS-001",
-            date: "29-Jul-2026 11:00 AM"
-        },
-        {
-            user: "Executive-2",
-            module: "WORKFLOW",
-            action: "SUBMIT",
-            description: "Submitted File",
-            date: "29-Jul-2026 11:15 AM"
-        },
-        {
-            user: "Director",
-            module: "WORKFLOW",
-            action: "FORWARD",
-            description: "Forwarded to Secretary",
-            date: "29-Jul-2026 11:40 AM"
-        },
-        {
-            user: "Minister",
-            module: "WORKFLOW",
-            action: "APPROVE",
-            description: "Approved File",
-            date: "29-Jul-2026 12:10 PM"
-        }
-    ];
+    const file = await File.findById(req.params.id).select("fileNumber subject");
 
-    res.render("audit/index", { logs });
+    const logs = await AuditLogsModel.find({
+        fileId : req.params.id
+    }).populate("userId","name role").sort({createdAt :-1});
+
+    
+    res.render("audit/index", { logs ,file});
 
 });
 

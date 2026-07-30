@@ -211,10 +211,14 @@ export const approveFile = async (req, res) => {
             description: "File approved"
         });
 
-        return res.status(200).json({
-            success: true,
-            message: "File approved successfully."
-        });
+        if(req.originalUrl.startsWith("/api")){
+            return res.status(200).json({
+                success: true,
+                message: "File approved successfully."
+            });
+        }
+
+        res.redirect("/workflow/inbox");
 
     } catch (error) {
         return res.status(500).json({
@@ -282,10 +286,14 @@ export const rejectFile = async (req, res) => {
             description: "File rejected"
         });
 
-        return res.status(200).json({
-            success: true,
-            message: "File rejected successfully."
-        });
+        if(req.originalUrl.startsWith("/api")){
+            return res.status(200).json({
+                success: true,
+                message: "File rejected successfully."
+            });
+        }
+        
+        res.redirect("/workflow/inbox");
     } catch (error) {
         return res.status(500).json({
             success: false,

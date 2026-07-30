@@ -2,58 +2,99 @@ extends ../layout/layout
 
 block content
 
-    h2.mb-4 Audit Logs
+    .container.mt-4
 
-    .card.shadow
+        .d-flex.justify-content-between.align-items-center.mb-4
 
-        .card-body
+            h2 File Audit Trail
 
-            table.table.table-hover
+            a.btn.btn-secondary(href="/files")
+                | Back
 
-                thead.table-dark
+        .card.shadow.mb-4
 
-                    tr
-                        th User
-                        th Module
-                        th Action
-                        th Description
-                        th Date
+            .card-header.bg-primary.text-white
 
-                tbody
+                h5.mb-0 File Information
 
-                    if logs.length
+            .card-body
 
-                        each log in logs
+                .row
+
+                    .col-md-6
+                        strong File Number:
+                        p= file.fileNumber
+
+                    .col-md-6
+                        strong Subject:
+                        p= file.subject
+
+        .card.shadow
+
+            .card-header.bg-dark.text-white
+
+                h5.mb-0 Audit History
+
+            .card-body
+
+                if logs && logs.length
+
+                    table.table.table-bordered.table-hover
+
+                        thead.table-dark
 
                             tr
+                                th #
+                                th User
+                                th Role
+                                th Module
+                                th Action
+                                th Description
+                                th Date
+                                
 
-                                td= log.user
+                        tbody
 
-                                td= log.module
+                            each log, index in logs
 
-                                td
+                                tr
 
-                                    if log.action=="CREATE"
-                                        span.badge.bg-primary CREATE
+                                    td= index + 1
 
-                                    else if log.action=="SUBMIT"
-                                        span.badge.bg-warning.text-dark SUBMIT
+                                    td= log.userId ? log.userId.name : "-"
 
-                                    else if log.action=="FORWARD"
-                                        span.badge.bg-info FORWARD
+                                    td= log.userId ? log.userId.role : "-"
 
-                                    else if log.action=="APPROVE"
-                                        span.badge.bg-success APPROVE
+                                    td= log.module
 
-                                    else
-                                        span.badge.bg-danger= log.action
+                                    td
 
-                                td= log.description
+                                        if log.action === "CREATE"
+                                            span.badge.bg-primary CREATE
 
-                                td= log.date
+                                        else if log.action === "SUBMIT"
+                                            span.badge.bg-info SUBMIT
 
-                    else
+                                        else if log.action === "FORWARD"
+                                            span.badge.bg-warning.text-dark FORWARD
 
-                        tr
-                            td.text-center(colspan="5")
-                                | No Audit Logs Found
+                                        else if log.action === "RETURN"
+                                            span.badge.bg-secondary SEND BACK
+
+                                        else if log.action === "APPROVE"
+                                            span.badge.bg-success APPROVE
+
+                                        else if log.action === "REJECT"
+                                            span.badge.bg-danger REJECT
+
+                                        else
+                                            span.badge.bg-dark= log.action
+
+                                    td= log.description
+                                    td= new Date(log.createdAt).toLocaleString()
+                                    
+
+                else
+
+                    p.text-center.text-muted.mt-3
+                        | No Audit Logs Found.

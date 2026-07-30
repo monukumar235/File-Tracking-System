@@ -2,33 +2,62 @@ extends ../layout/layout
 
 block content
 
-    h2.mb-4 Outbox
+    .container.mt-4
 
-    .card.shadow
+        .d-flex.justify-content-between.align-items-center.mb-4
 
-        .card-body
+            h2 My Outbox
 
-            table.table.table-hover
+            a.btn.btn-secondary(href="/dashboard")
+                | Dashboard
 
-                thead.table-dark
+        .card.shadow
 
-                    tr
-                        th File No
-                        th Subject
-                        th Sent To
-                        th Status
+            .card-header.bg-primary.text-white
 
-                tbody
+                h5.mb-0 Submitted Files
 
-                    each file in outbox
+            .card-body
+
+                table.table.table-hover
+
+                    thead.table-dark
 
                         tr
+                            th File No.
+                            th Subject
+                            th Current Owner
+                            th Status
+                        
 
-                            td= file.fileNumber
+                    tbody
 
-                            td= file.subject
+                        if files && files.length
 
-                            td= file.sentTo
+                            each file in files
 
-                            td
-                                span.badge.bg-warning.text-dark= file.status
+                                tr
+
+                                    td= file.fileNumber
+
+                                    td= file.subject
+
+                                    td= file.currentOwner ? `${file.currentOwner.name} (${file.currentOwner.role})` : "Completed"
+
+                                    td
+                                        if file.status === "APPROVED"
+                                            span.badge.bg-success Approved
+                                        else if file.status === "REJECTED"
+                                            span.badge.bg-danger Rejected
+                                        else if file.status === "IN_PROGRESS"
+                                            span.badge.bg-warning.text-dark In Progress
+                                        else
+                                            span.badge.bg-primary= file.status
+
+
+                        else
+
+                            tr
+
+                                td.text-center(colspan="5")
+                                    | No Submitted Files Found
