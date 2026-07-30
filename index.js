@@ -86,7 +86,23 @@ app.get("/users", authenticate,RoleBasedAuthorization("ADMIN"),async(req, res) =
     res.render("users/index", {
         users
     });
+});
 
+
+app.get("/error/403",(req,res)=>{
+    res.render("error/403")
+});
+
+app.get("/error/404",(req,res)=>{
+    res.render("error/404")
+});
+
+app.get("/error/400",(req,res)=>{
+    res.render("error/400")
+});
+
+app.get("/error/500",(req,res)=>{
+    res.render("error/500")
 });
 
 

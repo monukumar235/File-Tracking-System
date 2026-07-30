@@ -21,10 +21,13 @@ export const createUsers = async (req, res) => {
         const existingUser = await UserModel.findOne({ email });
 
         if (existingUser) {
-            return res.status(400).json({
-                succes: false,
-                message: "User with this email already exists."
-            });
+            if(req.originalUrl.startsWith("/api")){
+                return res.status(400).json({
+                    succes: false,
+                    message: "User with this email already exists."
+                });
+            }
+            return res.redirect("/error/400")
         }
         const hashed = await bcrypt.hash(password, 10);
 
@@ -50,11 +53,14 @@ export const createUsers = async (req, res) => {
         res.redirect("/users")
 
     } catch (error) {
-        return res.status(500).json({
-            succes: false,
-            message: "Internal server error",
-            error: error.message
-        });
+        if(req.originalUrl.startsWith("/api")){
+            return res.status(500).json({
+                succes: false,
+                message: "Internal server error",
+                error: error.message
+            });
+        }
+        return res.redirect("/error/500");
     }
 }
 
@@ -179,11 +185,14 @@ export const updateUser = async (req, res) => {
         }
         res.redirect("/users")
     } catch (error) {
-        return res.status(500).json({
-            succes: true,
-            message: "Internal server error.",
-            error: error.message
-        });
+        if(req.originalUrl.startsWith("/api")){
+            return res.status(500).json({
+                succes: true,
+                message: "Internal server error.",
+                error: error.message
+            });
+        }
+        return res.redirect("/error/500");
     }
 }
 
@@ -226,10 +235,13 @@ export const deteleUser = async (req, res) => {
         }
         res.redirect("/users")
     } catch (error) {
-        return res.status(500).json({
-            success: false,
-            message: "Internal server error",
-            error: error.message
-        });
+        if(req.originalUrl.startsWith("/api")){
+            return res.status(500).json({
+                success: false,
+                message: "Internal server error",
+                error: error.message
+            });
+        }
+        return res.redirect("/error/500");
     }
 }

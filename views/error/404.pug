@@ -1,0 +1,28 @@
+extends ../layout/layout
+
+block content
+
+    .container.mt-5
+
+        .text-center
+
+            h1.display-1.text-danger 404
+
+            h3.mt-3 User Not Found
+
+            p.text-muted
+                | The User you are looking for doesn't exist.
+
+            img(
+                src="https://cdn-icons-png.flaticon.com/512/2748/2748558.png"
+                width="180"
+                class="mb-4"
+            )
+
+            br
+
+            a.btn.btn-primary.me-2(href="/dashboard")
+                | Go to Dashboard
+
+            a.btn.btn-secondary(href="javascript:history.back()")
+                | Go Back

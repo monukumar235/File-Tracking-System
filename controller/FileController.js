@@ -10,8 +10,6 @@ export const createFile = async (req, res) => {
     try {
         const { subject, description, priority } = req.body;
 
-        console.log(req.body)
-
         if (!subject) {
             return res.status(404).json({
                 success: false,

@@ -22,19 +22,25 @@ export const login = async (req, res) => {
         const user = await UserModel.findOne({ email, isActive: true });
 
         if (!user) {
-            return res.status(404).json({
-                success: false,
-                message: "User not found"
-            });
+            if(req.originalUrl.startsWith("/api")){
+                return res.status(404).json({
+                    success: false,
+                    message: "User not found"
+                });
+            }
+            return res.redirect("/error/404")
         }
 
         const isMatch = await bcrypt.compare(password, user.password);
 
         if (!isMatch) {
-            return res.status(400).json({
+            if(req.originalUrl.startsWith("/api")){
+                return res.status(400).json({
                 success: false,
                 message: "Invalid Credentials"
             });
+            }
+            return res.redirect("/error/400")
         }
         const token = jwt.sign(
             {
@@ -75,11 +81,13 @@ export const login = async (req, res) => {
         return res.redirect("/dashboard");
 
     } catch (error) {
-        console.log(error);
-        return res.status(500).json({
-            success: false,
-            message: "Internal Server Error"
-        })
+        if(req.originalUrl.startsWith("/api")){
+            return res.status(500).json({
+                success: false,
+                message: "Internal Server Error"
+            });
+        }
+        return res.redirect("/error/500");
     }
 }
 
@@ -96,11 +104,14 @@ export const logout = async (req, res) => {
         res.redirect("/login");
 
     } catch (error) {
-        return res.status(500).json({
-            success: false,
-            message: "Intenal server error",
-            error: error.message
-        });
+        if(req.originalUrl.startsWith("/api")){
+            return res.status(500).json({
+                success: false,
+                message: "Intenal server error",
+                error: error.message
+            });
+        }
+        return res.redirect("/error/500");
     }
 }
 

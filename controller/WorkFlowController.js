@@ -71,11 +71,14 @@ export const forwardFile = async (req, res) => {
         res.redirect("/workflow/inbox");
 
     } catch (error) {
-        return res.status(500).json({
-            success: false,
-            message: "Internal server error",
-            error: error.message
-        });
+        if(req.originalUrl.startsWith("/api")){
+            return res.status(500).json({
+                success: false,
+                message: "Internal server error",
+                error: error.message
+            });
+        }
+        return res.redirect("/error/500");
     }
 }
 
@@ -148,11 +151,14 @@ export const returnFile = async (req, res) => {
         res.redirect("/workflow/inbox");
 
     } catch (error) {
-        return res.status(500).json({
-            success: false,
-            message: "Internal server error",
-            error: error.message
-        });
+        if(req.originalUrl.startsWith("/api")){
+            return res.status(500).json({
+                success: false,
+                message: "Internal server error",
+                error: error.message
+            });
+        }
+        return res.redirect("/error/500");
     }
 }
 
@@ -221,11 +227,14 @@ export const approveFile = async (req, res) => {
         res.redirect("/workflow/inbox");
 
     } catch (error) {
-        return res.status(500).json({
-            success: false,
-            message: "Internal server error",
-            error: error.message
-        });
+        if(req.originalUrl.startsWith("/api")){
+            return res.status(500).json({
+                success: false,
+                message: "Internal server error",
+                error: error.message
+            });
+        }
+        return res.redirect("/error/500")
     }
 }
 
@@ -295,11 +304,14 @@ export const rejectFile = async (req, res) => {
         
         res.redirect("/workflow/inbox");
     } catch (error) {
-        return res.status(500).json({
-            success: false,
-            message: "Internal server error.",
-            error: error.message
-        });
+        if(req.originalUrl.startsWith("/api")){
+            return res.status(500).json({
+                success: false,
+                message: "Internal server error.",
+                error: error.message
+            });
+        }
+        return res.redirect("/error/500");
     }
 }
 

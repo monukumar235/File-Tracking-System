@@ -10,10 +10,13 @@ export const authenticate = (req, res, next) => {
         
 
         if (!token) {
-            return res.status(404).json({
-                succss: false,
-                message: "Unauthorized"
-            });
+            if(req.originalUrl.startsWith("/api")){
+                return res.status(403).json({
+                    succss: false,
+                    message: "Unauthorized"
+                });
+            }
+            return res.redirect("/error/403");
         }
 
         const decode = jwt.verify(token, process.env.SECRET_KEY);
