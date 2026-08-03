@@ -7,7 +7,6 @@ import fileRoute from "./routes/FileRoute.js";
 import workFlowRoute from "./routes/WorkFlowRoute.js";
 import auditRoutes from "./routes/AuditRoutes.js";
 import dashBoardRoute from "./routes/DashBoardRoute.js";
-
 import path from "path";
 import { fileURLToPath } from "url";
 import { login,logout } from "./controller/authController.js";
@@ -55,10 +54,6 @@ app.use("/api/file",fileRoute);
 app.use("/api/workFlow",workFlowRoute);
 app.use("/api/audit",auditRoutes);
 app.use("/api/dashboard",dashBoardRoute);
-
-app.get("/test", (req, res) => {
-    res.render("layout/layout");
-});
 
 app.get("/login", (req, res) => {
     res.render("auth/login");
