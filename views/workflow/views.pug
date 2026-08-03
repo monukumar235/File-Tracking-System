@@ -62,19 +62,13 @@ block content
                         thead
                             tr
                                 th File Name
-                                th Action
+                                
 
                         tbody
                             each attachment in file.attachment
 
                                 tr
                                     td= attachment.originalName
-
-                                    td
-                                        a.btn.btn-sm.btn-success(
-                                            href=`/uploads/${attachment.fileName}`
-                                            target="_blank"
-                                        ) View
 
                 else
 
