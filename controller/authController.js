@@ -19,10 +19,16 @@ export const login = async (req, res) => {
             });
         }
 
+        console.log("Email from request:", email);
+
+        const users = await UserModel.find();
+        console.log("Total Users:", users.length);
+        console.log(users);
+
         const user = await UserModel.findOne({ email, isActive: true });
-        console.log(user);
+        console.log("Matched User:", user);
         if (!user) {
-            if(req.originalUrl.startsWith("/api")){
+            if (req.originalUrl.startsWith("/api")) {
                 return res.status(404).json({
                     success: false,
                     message: "User not found"
@@ -34,11 +40,11 @@ export const login = async (req, res) => {
         const isMatch = await bcrypt.compare(password, user.password);
 
         if (!isMatch) {
-            if(req.originalUrl.startsWith("/api")){
+            if (req.originalUrl.startsWith("/api")) {
                 return res.status(400).json({
-                success: false,
-                message: "Invalid Credentials"
-            });
+                    success: false,
+                    message: "Invalid Credentials"
+                });
             }
             return res.redirect("/error/400")
         }
@@ -55,8 +61,8 @@ export const login = async (req, res) => {
 
         res.cookie("token", token, {
             httpOnly: true,
-            secure : true,
-            sameSite : "none",
+            secure: true,
+            sameSite: "none",
             maxAge: 24 * 60 * 60 * 1000
         });
 
@@ -83,7 +89,7 @@ export const login = async (req, res) => {
         return res.redirect("/dashboard");
 
     } catch (error) {
-        if(req.originalUrl.startsWith("/api")){
+        if (req.originalUrl.startsWith("/api")) {
             return res.status(500).json({
                 success: false,
                 message: "Internal Server Error"
@@ -95,7 +101,7 @@ export const login = async (req, res) => {
 
 export const logout = async (req, res) => {
     try {
-       
+
         if (req.originalUrl.startsWith("/api")) {
             return res.status(200).json({
                 success: true,
@@ -106,7 +112,7 @@ export const logout = async (req, res) => {
         res.redirect("/login");
 
     } catch (error) {
-        if(req.originalUrl.startsWith("/api")){
+        if (req.originalUrl.startsWith("/api")) {
             return res.status(500).json({
                 success: false,
                 message: "Intenal server error",
