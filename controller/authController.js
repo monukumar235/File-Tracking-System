@@ -19,6 +19,9 @@ export const login = async (req, res) => {
             });
         }
 
+        console.log("Connected DB:", mongoose.connection.name);
+        console.log("Collections:", await mongoose.connection.db.listCollections().toArray());
+
         console.log("Email from request:", email);
 
         const users = await UserModel.find();
