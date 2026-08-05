@@ -20,7 +20,7 @@ export const login = async (req, res) => {
         }
 
         const user = await UserModel.findOne({ email, isActive: true });
-
+        console.log(user);
         if (!user) {
             if(req.originalUrl.startsWith("/api")){
                 return res.status(404).json({
