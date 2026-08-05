@@ -19,17 +19,9 @@ export const login = async (req, res) => {
             });
         }
 
-        console.log("Connected DB:", mongoose.connection.name);
-        console.log("Collections:", await mongoose.connection.db.listCollections().toArray());
-
-        console.log("Email from request:", email);
-
-        const users = await UserModel.find();
-        console.log("Total Users:", users.length);
-        console.log(users);
 
         const user = await UserModel.findOne({ email, isActive: true });
-        console.log("Matched User:", user);
+        
         if (!user) {
             if (req.originalUrl.startsWith("/api")) {
                 return res.status(404).json({
