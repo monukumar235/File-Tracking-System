@@ -43,6 +43,7 @@ app.use(express.json());
 app.use("/uploads",express.static("uploads"))
 
 dotenv.config();
+
 const port = process.env.PORT;
 
 connectToDb();
